@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Success</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Custom CSS */
+    body {
+      background-color: #f8f9fa;
+    }
+    .container {
+      margin-top: 50px;
+      text-align: center;
+    }
+    .success-icon {
+      color: #28a745;
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <div class="card text-center">
+          <div class="card-body">
+            <i class="fas fa-check-circle success-icon"></i>
+            <h3 class="card-title">Payment Successful!</h3>
+            <p class="card-text">Thank you for your purchase.</p>
+            <a href="{% url 'userlistbook' %}" class="btn btn-primary">Return to Home Page</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Font Awesome for the success icon -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>

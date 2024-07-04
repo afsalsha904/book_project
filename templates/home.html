@@ -1,0 +1,22 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+{% block content %}
+
+
+
+
+    {% for msg in messages %}
+        {{msg}}
+        {%endfor%}
+
+    {% if user.is_authenticated %}
+    {{user.username}}
+
+    <a href="{% url 'logout' %}">Logout</a>
+
+    {%endif%}
+
+    <p>Home page</p>
+
+
+{% endblock %}

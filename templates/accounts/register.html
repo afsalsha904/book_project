@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Title</title>
+<script src="{% static 'js/script.js' %}"></script>
+</head>
+<body>
+        {% for msg in messages %}
+        {{msg}}
+        {%endfor%}
+
+
+<form action="" method="post">
+    {% csrf_token %}
+
+<label for="username">Username:</label>
+<input type="text" name="username" id="username" placeholder="Enter the username" required><br/>
+
+<!-- <label for="first_name">First name:</label>
+<input type="text" name="first_name" id="first_name" placeholder="Enter the first name" required><br/>
+
+<label for="last_name">Last name:</label>
+<input type="text" name="last_name" id="last_name" placeholder="Enter the last name" required><br/>
+
+<label for="email">Email:</label>
+<input type="email" name="email" id="email" placeholder="Enter the mail id" required><br/> -->
+
+<label for="password">password:</label>
+<input type="password" name="password" id="password" placeholder="Enter the password" required><br/>
+
+<label for="password2">Confirm password:</label>
+<input type="password" name="password2" id="password2" placeholder="Confirm password" required><br/>
+
+<input type="submit" value="Register" onclick="showAlert()">
+</form>
+</body>
+</html>
