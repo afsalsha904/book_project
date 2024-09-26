@@ -2,11 +2,13 @@
 from django.conf import settings
 from django.contrib import auth
 from pyexpat.errors import messages
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Book, Cart, CartItem
 from django.urls import reverse
 import stripe
 from bookapp.models import Book
-from userapp.models import *
+from userapp.models import Cart,CartItem
 from django.core.paginator import Paginator,EmptyPage
 from django.db.models import Q
 from django.contrib.auth.models import User
@@ -57,18 +59,25 @@ def userSearch_Book(request):
 
 
 
-def add_to_cart(request,book_id):
-    book=Book.objects.get(id=book_id)
 
-    if book.quantity>0:
 
-        cart,created = Cart.objects.get_or_create(user=request.user)
-        cart_item,item_created = CartItem.objects.get_or_create(cart=cart,book=book)
 
-        if not item_created:
+@login_required
+def add_to_cart(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
 
-            cart_item.quantity+=1
-            cart_item.save()
+    if book.quantity > 0:
+        # Ensure the user is authenticated (this is handled by login_required)
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart_item, item_created = CartItem.objects.get_or_create(cart=cart, book=book)
+
+        if item_created:
+            cart_item.quantity = 1  # Set initial quantity if item is created
+        else:
+            cart_item.quantity += 1  # Increment quantity if item already exists
+
+        cart_item.save()
+
     return redirect('viewcart')
 
 

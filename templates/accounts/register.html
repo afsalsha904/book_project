@@ -1,39 +1,162 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Title</title>
-<script src="{% static 'js/script.js' %}"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <style>
+    body {
+      background: linear-gradient(135deg, #f3f4f6, #e9ecef);
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .register-container {
+      background: #fff;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    label {
+      font-weight: 500;
+    }
+
+    input[type="text"], input[type="email"], input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+    }
+
+    input[type="submit"] {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s ease;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+
+    .toggle-password {
+      float: right;
+      margin-top: -32px;
+      margin-right: 10px;
+      cursor: pointer;
+      color: #007bff;
+    }
+
+    .toggle-password:hover {
+      color: #0056b3;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+  </style>
 </head>
+
 <body>
-        {% for msg in messages %}
-        {{msg}}
-        {%endfor%}
+  <div class="register-container">
+    <h2>Create an Account</h2>
+    
+    <!-- Display any messages -->
+    {% for msg in messages %}
+      <div class="alert alert-info">{{msg}}</div>
+    {% endfor %}
 
+    <form action="" method="post">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" placeholder="Enter the username" required>
+      </div>
 
-<form action="" method="post">
-    {% csrf_token %}
+      <!-- Uncomment the following fields if needed -->
+      <!-- <div class="form-group">
+        <label for="first_name">First Name:</label>
+        <input type="text" name="first_name" id="first_name" placeholder="Enter your first name" required>
+      </div>
 
-<label for="username">Username:</label>
-<input type="text" name="username" id="username" placeholder="Enter the username" required><br/>
+      <div class="form-group">
+        <label for="last_name">Last Name:</label>
+        <input type="text" name="last_name" id="last_name" placeholder="Enter your last name" required>
+      </div>
 
-<!-- <label for="first_name">First name:</label>
-<input type="text" name="first_name" id="first_name" placeholder="Enter the first name" required><br/>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" placeholder="Enter your email" required>
+      </div> -->
 
-<label for="last_name">Last name:</label>
-<input type="text" name="last_name" id="last_name" placeholder="Enter the last name" required><br/>
+      <div class="form-group position-relative">
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" placeholder="Enter your password" required><br><br>
+        <span class="toggle-password" onclick="togglePassword()">Show</span>
+      </div>
 
-<label for="email">Email:</label>
-<input type="email" name="email" id="email" placeholder="Enter the mail id" required><br/> -->
+      <div class="form-group position-relative">
+        <label for="password2">Confirm Password:</label>
+        <input type="password" name="password2" id="password2" placeholder="Confirm your password" required>
+      </div>
 
-<label for="password">password:</label>
-<input type="password" name="password" id="password" placeholder="Enter the password" required><br/>
+      <input type="submit" value="Register">
+    </form>
+  </div>
 
-<label for="password2">Confirm password:</label>
-<input type="password" name="password2" id="password2" placeholder="Confirm password" required><br/>
+  <!-- Bootstrap JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
-<input type="submit" value="Register" onclick="showAlert()">
-</form>
+  <!-- Custom Script for Password Toggle -->
+  <script>
+    function togglePassword() {
+      const passwordField = document.getElementById('password');
+      const toggleButton = document.querySelector('span.toggle-password');
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+        toggleButton.textContent = "Hide";
+      } else {
+        passwordField.type = "password";
+        toggleButton.textContent = "Show";
+      }
+    }
+
+  </script>
 </body>
+
 </html>

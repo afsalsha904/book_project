@@ -15,14 +15,14 @@ from . models import UserProfile,loginTable
 # def createBook(request):
 #     books = Book.objects.all()
 #     if request.method == 'POST':
-#
+
 #         title = request.POST.get('title')
 #         price = request.POST.get('price')
-#
+
 #         book = Book(title=title, price=price)
-#
+
 #         book.save()
-#
+
 #     return render(request, 'book.html', {'books': books})
 
 
@@ -75,7 +75,7 @@ def deleteView(request, book_id):
 
         book.delete()
 
-        return redirect('/')
+        return render(request,'admin_view.html')
 
     return render(request, 'admin/deleteview.html', {'book':book})
 
@@ -89,7 +89,7 @@ def createBook(request):
         if form.is_valid():
             form.save()
 
-            return redirect('/')
+            return render(request,'admin_view.html')
 
     else:
         form =forms.BookForm()
@@ -105,7 +105,7 @@ def Create_Author(request):
         if form.is_valid():
             form.save()
 
-            return redirect('/')
+            return render(request,'admin_view.html')
 
     else:
         form=forms.AuthorForm()
@@ -121,7 +121,8 @@ def updateBook(request,book_id):
          if form.is_valid():
              form.save()
 
-             return redirect('/')
+             return render(request,'admin_view.html')
+
     else:
         form=forms.BookForm(instance=book)
 
@@ -132,21 +133,22 @@ def index(request):
     return render(request,'home.html')
 
 
-def Search_Book(request):
 
-    query=None
-    books=None
+
+def Search_Book(request):
+    query = None
+    books = None
 
     if 'q' in request.GET:
-        query=request.GET.get('q')
-        books=Book.objects.filter(Q(title__icontains=query) | Q(author__icontains=query))
-
+        query = request.GET.get('q')
+        # Assuming 'author' is a ForeignKey and 'name' is the field in the related Author model
+        books = Book.objects.filter(Q(title__icontains=query) | Q(author__name__icontains=query))
     else:
-        books=[]
+        books = []
 
-    context={'books':books,'query':query}
+    context = {'books': books, 'query': query}
+    return render(request, 'admin/search_book.html', context)
 
-    return render(request,'admin/search_book.html',context)
 
 
 
@@ -231,12 +233,12 @@ def HomePage(request):
 #             login_table.save()
 
 #            # messages.info(request, 'Registration success')
-#             return render(request,'login.html')
+#             return render(request,'accounts/login.html')
 #         else:
 #             #messages.info(request, 'password not matching')
 #             return redirect('register')
 
-#     return render(request,'register.html')
+#     return render(request,'accounts/register.html')
 
 
 # def loginPage(request):
@@ -259,13 +261,13 @@ def HomePage(request):
 #             else:
 #                 #messages.error(request, 'Invalid username or password')
 #                 print("invalid password")
-#                 return render(request, 'login.html')  # Return HttpResponse here
+#                 return render(request, 'accounts/login.html')  # Return HttpResponse here
 #         except loginTable.DoesNotExist:
 #             #messages.error(request, 'Invalid role')
 #             print("invalid role")
-#             return render(request, 'login.html')  # Return HttpResponse here
+#             return render(request, 'accounts/login.html')  # Return HttpResponse here
 
-#     return render(request, 'login.html')  # This handles GET requests and any other cases
+#     return render(request, 'accounts/login.html')  # This handles GET requests and any other cases
 
 
 # def admin_view(request):

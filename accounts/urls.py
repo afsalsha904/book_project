@@ -3,6 +3,7 @@ from accounts import views
 
 
 urlpatterns = [
+    
     path('register',views.userRegistration,name='register'),
 
     path('login/',views.loginPage,name='login'),

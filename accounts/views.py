@@ -1,79 +1,93 @@
-
-from django.contrib import auth
-from pyexpat.errors import messages
-from django.shortcuts import render,redirect
-from django.core.paginator import Paginator,EmptyPage
+from django.contrib import auth, messages
+from django.shortcuts import render, redirect
+from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Q
 from django.contrib.auth.models import User
-from bookapp. models import UserProfile,loginTable
-# Create your views here.
-
+from bookapp.models import UserProfile, loginTable
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from bookapp.models import loginTable
 
 def userRegistration(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        password2 = request.POST.get('password2')
 
-    login_table=loginTable()
-    userprofile=UserProfile()
-
-    if request.method=='POST':
-
-        userprofile.username=request.POST.get('username')
-        userprofile.password=request.POST.get('password')
-        userprofile.password2=request.POST.get('password2')
-
-        login_table.username=request.POST.get('username')
-        login_table.password=request.POST.get('password')
-        login_table.password2=request.POST.get('password2')
-        login_table.type='user'
-
-        if request.POST.get('password')== request.POST.get('password2'):
-            userprofile.save()
-            login_table.save()
-
-           # messages.info(request, 'Registration success')
-            return render(request,'login.html')
-        else:
-            #messages.info(request, 'password not matching')
+        if password != password2:
+            messages.error(request, 'Passwords do not match.')
             return redirect('register')
 
-    return render(request,'register.html')
+        if loginTable.objects.filter(username=username).exists():
+            messages.error(request, 'Username already exists.')
+            return redirect('register')
+
+        
+        userprofile = UserProfile(username=username, password=password)
+        login_table = loginTable(username=username, password=password, type='user')
+
+        userprofile.save()
+        login_table.save()
+
+        messages.success(request, 'Registration successful.')
+        return redirect('login') 
+
+    return render(request, 'accounts/register.html')
+
+
 
 
 def loginPage(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user = loginTable.objects.filter(username=username, password=password, type='user').exists()
 
+        # First check if the user is a superuser (Django's User model)
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            # If the user is a superuser, redirect to the admin view
+            if user.is_superuser:
+                login(request, user)  # Django's login function to log the superuser in
+                return redirect('admin_view')
+
+        # If not authenticated by Django's system, check in the custom loginTable
         try:
-            if user:
-                user_details = loginTable.objects.get(username=username, password=password)
-                user_name = user_details.username
-                user_type = user_details.type
-                if user_type == 'user':
-                    request.session['username'] = user_name
-                    return render(request, 'user_view.html')
-                elif user_type == 'admin':
-                    request.session['username'] = user_name
-                    return render(request, 'admin_view.html')
-            else:
-                #messages.error(request, 'Invalid username or password')
-                print("invalid password")
-                return render(request, 'login.html')  # Return HttpResponse here
+            # Check if the user exists in the custom loginTable and validate credentials manually
+            user_details = loginTable.objects.get(username=username, password=password)
+            user_name = user_details.username
+            user_type = user_details.type
+
+            # Set session for the user
+            request.session['username'] = user_name
+
+            # Redirect based on user type
+            if user_type == 'user':
+                return redirect('user_view')
+            elif user_type == 'admin':
+                return redirect('admin_view')
+
         except loginTable.DoesNotExist:
-            #messages.error(request, 'Invalid role')
-            print("invalid role")
-            return render(request, 'login.html')  # Return HttpResponse here
+            messages.error(request, 'This user does not exist.')
+            return redirect('login')
 
-    return render(request, 'login.html')  # This handles GET requests and any other cases
+        # If neither Django user nor custom user is found
+        messages.error(request, 'Invalid username or password.')
+        return redirect('login')
+
+    # Render the login page if it's a GET request
+    return render(request, 'accounts/login.html')
 
 
+
+@login_required
 def admin_view(request):
-    user_name=request.session['username']
+    user_name = request.user.username
+    return render(request, 'admin_view.html', {'user_name': user_name})
 
-    return render(request,'admin_view.html',{'user_name':user_name})
-
+@login_required
 def user_view(request):
-    user_name=request.session['username']
-
-    return render(request,'user_view.html',{'user_name':user_name})
+    user_name = request.user.username
+    return render(request, 'user_view.html', {'user_name': user_name})
 

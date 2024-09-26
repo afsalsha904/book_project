@@ -1,0 +1,26 @@
+{
+  "extends": [
+    "development"
+  ],
+  "hints": {
+    "axe/forms": [
+      "default",
+      {
+        "label": "off"
+      }
+    ],
+    "axe/language": [
+      "default",
+      {
+        "html-has-lang": "off"
+      }
+    ],
+    "meta-viewport": "off",
+    "apple-touch-icons": "off",
+    "axe/name-role-value": "off",
+    "meta-charset-utf-8": "off",
+    "axe/structure": "off",
+    "axe/text-alternatives": "off",
+    "no-inline-styles": "off"
+  }
+}
