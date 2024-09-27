@@ -43,26 +43,20 @@ def loginPage(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        # First check if the user is a superuser (Django's User model)
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            # If the user is a superuser, redirect to the admin view
             if user.is_superuser:
-                login(request, user)  # Django's login function to log the superuser in
+                login(request, user)
                 return redirect('admin_view')
 
-        # If not authenticated by Django's system, check in the custom loginTable
         try:
-            # Check if the user exists in the custom loginTable and validate credentials manually
             user_details = loginTable.objects.get(username=username, password=password)
             user_name = user_details.username
             user_type = user_details.type
 
-            # Set session for the user
             request.session['username'] = user_name
 
-            # Redirect based on user type
             if user_type == 'user':
                 return redirect('user_view')
             elif user_type == 'admin':
@@ -72,21 +66,18 @@ def loginPage(request):
             messages.error(request, 'This user does not exist.')
             return redirect('login')
 
-        # If neither Django user nor custom user is found
         messages.error(request, 'Invalid username or password.')
         return redirect('login')
 
-    # Render the login page if it's a GET request
     return render(request, 'accounts/login.html')
 
 
 
-@login_required
 def admin_view(request):
     user_name = request.user.username
     return render(request, 'admin_view.html', {'user_name': user_name})
 
-@login_required
+
 def user_view(request):
     user_name = request.user.username
     return render(request, 'user_view.html', {'user_name': user_name})

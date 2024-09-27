@@ -54,6 +54,8 @@
                  <td>{{book.price}}</td>
                  <td>{{book.author}}</td>
                  <td><a href="{% url 'details' book.id %}" type="submit" class="btn btn-primary">Details</a>
+                <td><a href="{% url 'addtocart' book.id %}" class="btn btn-warning"> Add to cart</a></td>
+
                  <!-- <a href="{% url 'update' book.id %}" class="btn btn-success">Update</a>
                   <a href="{% url 'delete' book.id %}" class="btn btn-danger">Delete</a></td> -->
       

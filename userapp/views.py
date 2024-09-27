@@ -29,7 +29,7 @@ def userlistBook(request):
         page = paginator.page(page_number.num_pages)
 
 
-    return render(request, 'user/userlistBook.html', {'books': books, 'page': page})
+    return render(request, 'user/userlistbook.html', {'books': books, 'page': page})
 
 
 def userdetailsView(request,book_id):
@@ -60,14 +60,10 @@ def userSearch_Book(request):
 
 
 
-
-
-@login_required
 def add_to_cart(request, book_id):
-    book = get_object_or_404(Book, id=book_id)
+    book = Book.objects.get(id = book_id)
 
     if book.quantity > 0:
-        # Ensure the user is authenticated (this is handled by login_required)
         cart, created = Cart.objects.get_or_create(user=request.user)
         cart_item, item_created = CartItem.objects.get_or_create(cart=cart, book=book)
 
@@ -82,7 +78,8 @@ def add_to_cart(request, book_id):
 
 
 def view_cart(request):
-    cart,created = Cart.objects.get_or_create(user=request.user)
+
+    cart, created = Cart.objects.get_or_create(user=request.user)
     cart_items = cart.cartitem_set.all()
     cart_item = CartItem.objects.all()
     total_price = sum(item.book.price * item.quantity for item in cart_items)
