@@ -61,34 +61,53 @@ def userSearch_Book(request):
 
 
 def add_to_cart(request, book_id):
-    book = Book.objects.get(id = book_id)
+    book = Book.objects.get(id=book_id)
+    try:
+        if request.user.is_authenticated:
+            if book.quantity > 0:
+                cart, created = Cart.objects.get_or_create(user=request.user)
+                cart_item, item_created = CartItem.objects.get_or_create(cart=cart, book=book)
 
-    if book.quantity > 0:
-        cart, created = Cart.objects.get_or_create(user=request.user)
-        cart_item, item_created = CartItem.objects.get_or_create(cart=cart, book=book)
+                if item_created:
+                    cart_item.quantity = 1  
+                else:
+                    cart_item.quantity += 1 
 
-        if item_created:
-            cart_item.quantity = 1  # Set initial quantity if item is created
-        else:
-            cart_item.quantity += 1  # Increment quantity if item already exists
+                cart_item.save()
 
-        cart_item.save()
-
-    return redirect('viewcart')
+            return redirect('viewcart')
+    except:
+        messages.error(request, "please login")
 
 
 def view_cart(request):
+    try:
+        if request.user.is_authenticated:
+            cart, created = Cart.objects.get_or_create(user=request.user)
+            cart_items = cart.cartitem_set.all()
+            total_price = sum(item.book.price * item.quantity for item in cart_items)
+            total_items = cart_items.count()
 
-    cart, created = Cart.objects.get_or_create(user=request.user)
-    cart_items = cart.cartitem_set.all()
-    cart_item = CartItem.objects.all()
-    total_price = sum(item.book.price * item.quantity for item in cart_items)
-    total_items = cart_items.count()
-    
+            context = {
+                'cart_items': cart_items,
+                'total_price': total_price,
+                'total_items': total_items
+            }
 
-    context = {'cart_items':cart_items,'cart_item':cart_item,'total_price':total_price,'total_items':total_items}
+            return render(request, 'user/cart.html', context)
+        else:
+            messages.error(request, 'Please login first')
+    except Cart.DoesNotExist:
+        messages.error(request, 'Error retrieving the cart')
 
-    return render(request,'user/cart.html',context)
+    # Default context in case of an exception or user not authenticated
+    context = {
+        'cart_items': [],
+        'total_price': 0,
+        'total_items': 0
+    }
+
+    return render(request, 'user/cart.html', context)
 
 
 
